@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Will you Give me Treat Today?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            position: relative;
+            height: 60px;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .yes-btn {
+            background: #667eea;
+            color: white;
+            z-index: 10;
+        }
+
+        .yes-btn:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        .no-btn {
+            background: #ff6b6b;
+            color: white;
+            position: absolute;
+            transition: all 0.4s ease;
+        }
+
+        .no-btn:hover {
+            background: #ff5252;
+        }
+
+        .message {
+            margin-top: 30px;
+            font-size: 18px;
+            color: #555;
+            font-weight: 500;
+            min-height: 30px;
+        }
+
+        .food-menu {
+            display: none;
+            margin-top: 30px;
+        }
+
+        .food-menu.active {
+            display: block;
+        }
+
+        .food-title {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .food-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .food-item {
+            background: #f5f5f5;
+            border-radius: 15px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+            position: relative;
+        }
+
+        .food-item:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .food-item.selected {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+
+        .food-item.selected::after {
+            content: "✔";
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            font-size: 20px;
+            color: #4ade80;
+            font-weight: bold;
+            text-shadow: 0 0 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .food-item.selected .food-item-name {
+            color: white;
+        }
+
+        .food-item img {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        .food-item-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .selected-message {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #667eea;
+            font-weight: 600;
+            min-height: 30px;
+        }
+
+        .reset-btn {
+            background: #764ba2;
+            color: white;
+            margin-top: 20px;
+            padding: 10px 25px;
+            font-size: 14px;
+        }
+
+        .reset-btn:hover {
+            background: #653a8a;
+        }
+
+        .varieties-section {
+            display: none;
+        }
+
+        .varieties-section.active {
+            display: block;
+        }
+
+        .varieties-title {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .back-btn {
+            background: #ff9500;
+            color: white;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #ff8c00;
+        }
+
+        .varieties-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .variety-item {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 12px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            text-align: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .variety-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .variety-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .variety-price {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .variety-rupee {
+            font-size: 12px;
+        }
+
+        @media (max-width: 500px) {
+            .container {
+                padding: 30px 20px;
+            }
+
+            h1 {
+                font-size: 22px;
+            }
+
+            button {
+                padding: 10px 25px;
+                font-size: 14px;
+            }
+
+            .food-grid {
+                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+                gap: 10px;
+            }
+
+            .food-item img {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Will you Give me Treat Today </h1>
+        
+        <div class="button-container" id="buttonContainer">
+            <button class="yes-btn" id="yesBtn">Yes</button>
+            <button class="no-btn" id="noBtn">No</button>
+        </div>
+
+        <div class="message" id="message"></div>
+
+        <div class="food-menu" id="foodMenu">
+            <div class="food-title">Choose Your Treat! 🍽️</div>
+            <div class="food-grid" id="foodGrid">
+                <div class="food-item" data-food="Ice Cream">
+                    <div>🍦</div>
+                    <div class="food-item-name">Ice Cream</div>
+                </div>
+                <div class="food-item" data-food="Pizza">
+                    <div>🍕</div>
+                    <div class="food-item-name">Pizza</div>
+                </div>
+                <div class="food-item" data-food="Chowmein">
+                    <div>🍜</div>
+                    <div class="food-item-name">Chowmein</div>
+                </div>
+                <div class="food-item" data-food="Chicken">
+                    <div>🍗</div>
+                    <div class="food-item-name">Chicken</div>
+                </div>
+                <div class="food-item" data-food="Paneer">
+                    <div>🧀</div>
+                    <div class="food-item-name">Paneer</div>
+                </div>
+                <div class="food-item" data-food="Idli">
+                    <div>🍚</div>
+                    <div class="food-item-name">Idli</div>
+                </div>
+                <div class="food-item" data-food="Burger">
+                    <div>🍔</div>
+                    <div class="food-item-name">Burger</div>
+                </div>
+            </div>
+            <div class="selected-message" id="selectedMessage">Click on an item to select! 😋</div>
+            <button class="reset-btn" id="resetBtn">Back to Main</button>
+        </div>
+
+        <div class="varieties-section" id="varietiesSection">
+            <button class="back-btn" id="backToFoodBtn">← Back to Menu</button>
+            <div class="varieties-title" id="varietiesTitle">Available Varieties</div>
+            <div class="varieties-grid" id="varietiesGrid">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const message = document.getElementById('message');
+        const foodMenu = document.getElementById('foodMenu');
+        const foodGrid = document.getElementById('foodGrid');
+        const selectedMessage = document.getElementById('selectedMessage');
+        const resetBtn = document.getElementById('resetBtn');
+        const buttonContainer = document.getElementById('buttonContainer');
+        const varietiesSection = document.getElementById('varietiesSection');
+        const varietiesGrid = document.getElementById('varietiesGrid');
+        const varietiesTitle = document.getElementById('varietiesTitle');
+        const backToFoodBtn = document.getElementById('backToFoodBtn');
+        
+        // Varieties data for each food item
+        const varietiesData = {
+            'Ice Cream': [
+                { name: 'Vanilla', price: 40 },
+                { name: 'Chocolate', price: 45 },
+                { name: 'Strawberry', price: 45 },
+                { name: 'Mint Choco', price: 50 },
+                { name: 'Butterscotch', price: 50 },
+                { name: 'Mango', price: 50 },
+                { name: 'Pistachio', price: 60 },
+                { name: 'Cookie Dough', price: 75 }
+            ],
+            'Pizza': [
+                { name: 'Margherita', price: 30 },
+                { name: 'Pepperoni', price: 45 },
+                { name: 'Veggie', price: 40 },
+                { name: 'BBQ Chicken', price: 60 },
+                { name: 'Cheese Burst', price: 50 },
+                { name: 'Tandoori', price: 55 },
+                { name: 'Paneer', price: 50 },
+                { name: 'Deluxe', price: 80 }
+            ],
+            'Chowmein': [
+                { name: 'Plain', price: 30 },
+                { name: 'Vegetable', price: 45 },
+                { name: 'Chicken', price: 55 },
+                { name: 'Prawns', price: 75 },
+                { name: 'Paneer', price: 50 },
+                { name: 'Egg', price: 40 },
+                { name: 'Mixed', price: 60 },
+                { name: 'Dragon', price: 90 }
+            ],
+            'Chicken': [
+                { name: 'Tandoori', price: 50 },
+                { name: 'Butter', price: 60 },
+                { name: 'Spicy', price: 55 },
+                { name: 'Lemon Pepper', price: 65 },
+                { name: 'Tikka', price: 70 },
+                { name: 'Biryani', price: 80 },
+                { name: 'Grilled', price: 75 },
+                { name: 'Special', price: 100 }
+            ],
+            'Paneer': [
+                { name: 'Butter Paneer', price: 60 },
+                { name: 'Paneer Tikka', price: 65 },
+                { name: 'Chilly Paneer', price: 55 },
+                { name: 'Paneer Dosa', price: 40 },
+                { name: 'Paneer Wrap', price: 45 },
+                { name: 'Grilled Paneer', price: 70 },
+                { name: 'Shahi Paneer', price: 80 },
+                { name: 'Premium Mix', price: 95 }
+            ],
+            'Idli': [
+                { name: 'Plain', price: 30 },
+                { name: 'Sambar', price: 35 },
+                { name: 'Chutney', price: 35 },
+                { name: 'Cheese', price: 50 },
+                { name: 'Masala', price: 45 },
+                { name: 'Paneer', price: 55 },
+                { name: 'Mixed Veg', price: 50 },
+                { name: 'Special Pack', price: 75 }
+            ],
+            'Burger': [
+                { name: 'Veggie', price: 30 },
+                { name: 'Chicken', price: 50 },
+                { name: 'Cheese', price: 35 },
+                { name: 'Double Cheese', price: 60 },
+                { name: 'Paneer', price: 50 },
+                { name: 'BBQ Chicken', price: 65 },
+                { name: 'Spicy Meat', price: 70 },
+                { name: 'Gourmet', price: 100 }
+            ]
+        };
+        
+        const messages = [
+            "Yes! You're the best! 🍰",
+            "Finally! I was starving! 🍪",
+            "YES! Treat time! 🎉🍩",
+            "You just made my day! 🧁",
+            "Yummy yummy! 😋🍫",
+            "Best decision ever! 🍕",
+            "You're awesome! 🌮🎉",
+            "Woohoo! Treat me now! 🍰✨",
+            "Best. Day. Ever! 🎊🍪"
+        ];
+
+        let clickCount = 0;
+
+        function moveNoButton() {
+            const randomX = Math.random() * (window.innerWidth - 120);
+            const randomY = Math.random() * (window.innerHeight - 100);
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = randomX + 'px';
+            noBtn.style.top = randomY + 'px';
+        }
+
+        function showMainMenu() {
+            foodMenu.classList.remove('active');
+            varietiesSection.classList.remove('active');
+            buttonContainer.style.display = 'flex';
+            message.textContent = '';
+            selectedMessage.textContent = 'Click on an item to select! 😋';
+            noBtn.style.position = 'relative';
+            noBtn.style.left = 'auto';
+            noBtn.style.top = 'auto';
+            // Clear selection
+            foodItems.forEach(food => food.classList.remove('selected'));
+        }
+
+        function showFoodMenu() {
+            message.textContent = messages[clickCount % messages.length];
+            clickCount++;
+            buttonContainer.style.display = 'none';
+            foodMenu.classList.add('active');
+            varietiesSection.classList.remove('active');
+        }
+
+        function showVarieties(foodName) {
+            foodMenu.classList.remove('active');
+            varietiesSection.classList.add('active');
+            varietiesTitle.textContent = `${foodName} Varieties 🍽️`;
+            
+            // Get varieties for this food
+            const varieties = varietiesData[foodName] || [];
+            
+            // Clear grid
+            varietiesGrid.innerHTML = '';
+            
+            // Add variety items
+            varieties.forEach((variety, index) => {
+                const varietyItem = document.createElement('div');
+                varietyItem.className = 'variety-item';
+                varietyItem.innerHTML = `
+                    <div class="variety-name">${variety.name}</div>
+                    <div class="variety-price"><span class="variety-rupee">₹</span> ${variety.price}</div>
+                `;
+                varietyItem.addEventListener('click', () => {
+                    alert(`✅ Added ${variety.name} (${foodName}) - ₹${variety.price} to cart!`);
+                });
+                varietiesGrid.appendChild(varietyItem);
+            });
+        }
+
+        function backToFoodMenu() {
+            varietiesSection.classList.remove('active');
+            foodMenu.classList.add('active');
+        }
+
+        yesBtn.addEventListener('click', showFoodMenu);
+
+        // Food item selection
+        const foodItems = document.querySelectorAll('.food-item');
+        foodItems.forEach(item => {
+            item.addEventListener('click', () => {
+                const foodName = item.getAttribute('data-food');
+                showVarieties(foodName);
+            });
+        });
+
+        // Back button to go to food menu from varieties
+        backToFoodBtn.addEventListener('click', backToFoodMenu);
+
+        // Reset button
+        resetBtn.addEventListener('click', showMainMenu);
+
+        // Move No button away on hover
+        noBtn.addEventListener('mouseenter', moveNoButton);
+
+        // Move No button away on click attempt
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            moveNoButton();
+        });
+
+        // Move No button away on touch
+        noBtn.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            moveNoButton();
+        });
+
+        // Move No button away as mouse approaches
+        document.addEventListener('mousemove', (e) => {
+            const rect = noBtn.getBoundingClientRect();
+            const distance = Math.sqrt(
+                Math.pow(e.clientX - (rect.left + rect.width / 2), 2) +
+                Math.pow(e.clientY - (rect.top + rect.height / 2), 2)
+            );
+            
+            if (distance < 100) {
+                moveNoButton();
+            }
+        });
+    </script>
+</body>
+</html>

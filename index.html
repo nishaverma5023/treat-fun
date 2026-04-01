@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Will you Give me Treat today?</title>
+    <title>Will you Give me Treat Today?</title>
     <style>
         * {
             margin: 0;
@@ -214,6 +214,72 @@
             margin-top: 20px;
         }
 
+        .thankyou-section {
+            display: none;
+            text-align: center;
+            animation: slideIn 0.6s ease-in-out;
+        }
+
+        .thankyou-section.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .thankyou-message {
+            font-size: 32px;
+            color: #667eea;
+            font-weight: 700;
+            margin-bottom: 40px;
+            line-height: 1.5;
+        }
+
+        .thankyou-submessage {
+            font-size: 16px;
+            color: #764ba2;
+            font-weight: 600;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background: #667eea;
+            pointer-events: none;
+            animation: confettiFall 2.5s linear forwards;
+        }
+
+        @keyframes confettiFall {
+            to {
+                transform: translateY(100vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .home-btn {
+            background: #667eea;
+            color: white;
+            margin-top: 20px;
+            padding: 12px 30px;
+            font-size: 16px;
+        }
+
+        .home-btn:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
         .variety-item {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             border-radius: 12px;
@@ -275,7 +341,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Will you Give me Treat Tommorrow </h1>
+        <h1>Will you Give me Treat Today </h1>
         
         <div class="button-container" id="buttonContainer">
             <button class="yes-btn" id="yesBtn">Yes</button>
@@ -326,6 +392,16 @@
             <div class="varieties-grid" id="varietiesGrid">
             </div>
         </div>
+
+        <div class="thankyou-section" id="thankyouSection">
+            <div class="thankyou-message" id="thankyouMessage">
+                🎉 Thank you for giving treat to me friend 🙏💕
+            </div>
+            <div class="thankyou-submessage" id="thankyouSubmessage">
+                ✨ Next time my chance to treat you 🎁😊 ✨
+            </div>
+            <button class="home-btn" id="homeBtn">Back to Home</button>
+        </div>
     </div>
 
     <script>
@@ -341,6 +417,8 @@
         const varietiesGrid = document.getElementById('varietiesGrid');
         const varietiesTitle = document.getElementById('varietiesTitle');
         const backToFoodBtn = document.getElementById('backToFoodBtn');
+        const thankyouSection = document.getElementById('thankyouSection');
+        const homeBtn = document.getElementById('homeBtn');
         
         // Varieties data for each food item
         const varietiesData = {
@@ -479,7 +557,7 @@
                     <div class="variety-price"><span class="variety-rupee">₹</span> ${variety.price}</div>
                 `;
                 varietyItem.addEventListener('click', () => {
-                    alert(`✅ Added ${variety.name} (${foodName}) - ₹${variety.price} to cart!`);
+                    showThankYouPage(variety.name, foodName, variety.price);
                 });
                 varietiesGrid.appendChild(varietyItem);
             });
@@ -488,6 +566,32 @@
         function backToFoodMenu() {
             varietiesSection.classList.remove('active');
             foodMenu.classList.add('active');
+        }
+
+        function showThankYouPage(varietyName, foodName, price) {
+            varietiesSection.classList.remove('active');
+            thankyouSection.classList.add('active');
+            createConfetti();
+        }
+
+        function createConfetti() {
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = ['#667eea', '#764ba2', '#ff6b6b', '#4ade80', '#f59e0b'][Math.floor(Math.random() * 5)];
+                    confetti.style.animationDuration = (Math.random() * 1.5 + 1.5) + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => confetti.remove(), 4000);
+                }, i * 30);
+            }
+        }
+
+        function goHome() {
+            thankyouSection.classList.remove('active');
+            showMainMenu();
         }
 
         yesBtn.addEventListener('click', showFoodMenu);
@@ -506,6 +610,9 @@
 
         // Reset button
         resetBtn.addEventListener('click', showMainMenu);
+
+        // Home button from thank you page
+        homeBtn.addEventListener('click', goHome);
 
         // Move No button away on hover
         noBtn.addEventListener('mouseenter', moveNoButton);
